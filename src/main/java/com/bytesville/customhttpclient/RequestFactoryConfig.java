@@ -18,50 +18,52 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 @Configuration
 public class RequestFactoryConfig {
 
-  private final ConnectionKeepAliveStrategy connectionKeepAliveStrategy;
-  private final MeterRegistry registry;
-  RequestFactoryConfig(ConnectionKeepAliveStrategy connectionKeepAliveStrategy, MeterRegistry registry){
-    this.connectionKeepAliveStrategy = connectionKeepAliveStrategy;
-    this.registry = registry;
-  }
+    private final ConnectionKeepAliveStrategy connectionKeepAliveStrategy;
+    private final MeterRegistry registry;
 
-  @Bean
-  @Qualifier("apacheRestTemplate")
-  public ClientHttpRequestFactory createRequestFactory() throws InterruptedException {
-    PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-    connectionManager.setMaxTotal(400);
-    connectionManager.setDefaultMaxPerRoute(200);
-    IdleConnectionMonitorThread
-        connectionMonitor = new IdleConnectionMonitorThread(connectionManager, registry);
-    connectionMonitor.start();
-    connectionMonitor.join(2000);
-    RequestConfig requestConfig = RequestConfig
-        .custom()
-        .setConnectionRequestTimeout(5000)
-        .setSocketTimeout(10000)
-        .build();
+    RequestFactoryConfig(ConnectionKeepAliveStrategy connectionKeepAliveStrategy, MeterRegistry registry) {
+        this.connectionKeepAliveStrategy = connectionKeepAliveStrategy;
+        this.registry = registry;
+    }
 
-    CloseableHttpClient httpClient = HttpClients
-        .custom()
-        .setConnectionManager(connectionManager)
-        .setKeepAliveStrategy(connectionKeepAliveStrategy)
-        .setDefaultRequestConfig(requestConfig)
-        .build();
-    return new HttpComponentsClientHttpRequestFactory(httpClient);
-  }
+    @Bean
+    @Qualifier("apacheRestTemplate")
+    public ClientHttpRequestFactory createRequestFactory() throws InterruptedException {
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(400);
+        connectionManager.setDefaultMaxPerRoute(200);
+        IdleConnectionMonitorThread
+                connectionMonitor = new IdleConnectionMonitorThread(connectionManager, registry);
+        connectionMonitor.start();
+        connectionMonitor.join(2000);
+        RequestConfig requestConfig = RequestConfig
+                .custom()
+                .setConnectionRequestTimeout(5000)
+                .setSocketTimeout(10000)
+                .build();
 
-  @Bean
-  @Qualifier("apacheSpringCommonsRestTemplate")
-  public ClientHttpRequestFactory createCommonsRequestFactory() {
-    ApacheHttpClientFactoryImpl httpClientFactory = new ApacheHttpClientFactoryImpl();
-    HttpClient client = httpClientFactory.createBuilder().build();
-    return new HttpComponentsClientHttpRequestFactory(client);
-  }
-  @Bean
-  @Qualifier("OKSpringCommonsRestTemplate")
-  public ClientHttpRequestFactory createOKCommonsRequestFactory() {
-    OkHttpClientFactoryImpl  httpClientFactory= new OkHttpClientFactoryImpl();
-    OkHttpClient client = httpClientFactory.createBuilder(false).build();
-    return new OkHttp3ClientHttpRequestFactory(client);
-  }
+        CloseableHttpClient httpClient = HttpClients
+                .custom()
+                .setConnectionManager(connectionManager)
+                .setKeepAliveStrategy(connectionKeepAliveStrategy)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+        return new HttpComponentsClientHttpRequestFactory(httpClient);
+    }
+
+    @Bean
+    @Qualifier("apacheSpringCommonsRestTemplate")
+    public ClientHttpRequestFactory createCommonsRequestFactory() {
+        ApacheHttpClientFactoryImpl httpClientFactory = new ApacheHttpClientFactoryImpl();
+        HttpClient client = httpClientFactory.createBuilder().build();
+        return new HttpComponentsClientHttpRequestFactory(client);
+    }
+
+    @Bean
+    @Qualifier("OKSpringCommonsRestTemplate")
+    public ClientHttpRequestFactory createOKCommonsRequestFactory() {
+        OkHttpClientFactoryImpl httpClientFactory = new OkHttpClientFactoryImpl();
+        OkHttpClient client = httpClientFactory.createBuilder(false).build();
+        return new OkHttp3ClientHttpRequestFactory(client);
+    }
 }

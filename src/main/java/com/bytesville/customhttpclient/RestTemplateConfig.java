@@ -15,43 +15,46 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfig {
 
-  @Autowired @Qualifier("apacheRestTemplate")
-  ClientHttpRequestFactory customRequestFactory;
+    @Autowired
+    @Qualifier("apacheRestTemplate")
+    ClientHttpRequestFactory customRequestFactory;
 
-  @Autowired @Qualifier("apacheSpringCommonsRestTemplate")
-  ClientHttpRequestFactory apacheHttpRequestFactory;
+    @Autowired
+    @Qualifier("apacheSpringCommonsRestTemplate")
+    ClientHttpRequestFactory apacheHttpRequestFactory;
 
-  @Autowired @Qualifier("OKSpringCommonsRestTemplate")
-  ClientHttpRequestFactory okHttpRequestFactory;
+    @Autowired
+    @Qualifier("OKSpringCommonsRestTemplate")
+    ClientHttpRequestFactory okHttpRequestFactory;
 
-  @Bean
-  @Qualifier("defaultRestTemplate")
-  @Primary
-  public RestTemplate defaultRestTemplate(){
-    return new RestTemplate();
-  }
+    @Bean
+    @Qualifier("defaultRestTemplate")
+    @Primary
+    public RestTemplate defaultRestTemplate() {
+        return new RestTemplate();
+    }
 
-  @Bean
-  @Qualifier("apacheRestTemplate")
-  public RestTemplate createCustomRestTemplate(){
-    RestTemplate restTemplate = new RestTemplate();
-    restTemplate.setRequestFactory(customRequestFactory);
-    return restTemplate;
-  }
+    @Bean
+    @Qualifier("apacheRestTemplate")
+    public RestTemplate createCustomRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(customRequestFactory);
+        return restTemplate;
+    }
 
-  @Bean
-  @Qualifier("apacheSpringCommonsRestTemplate")
-  public RestTemplate createApacheCustomRestTemplate() {
-    RestTemplate restTemplate = new RestTemplate();
-    restTemplate.setRequestFactory(apacheHttpRequestFactory);
-    return restTemplate;
-  }
+    @Bean
+    @Qualifier("apacheSpringCommonsRestTemplate")
+    public RestTemplate createApacheCustomRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(apacheHttpRequestFactory);
+        return restTemplate;
+    }
 
-  @Bean
-  @Qualifier("OKSpringCommonsRestTemplate")
-  public RestTemplate createOKCustomRestTemplate() {
-    RestTemplate restTemplate = new RestTemplate();
-    restTemplate.setRequestFactory(okHttpRequestFactory);
-    return restTemplate;
-  }
+    @Bean
+    @Qualifier("OKSpringCommonsRestTemplate")
+    public RestTemplate createOKCustomRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(okHttpRequestFactory);
+        return restTemplate;
+    }
 }
